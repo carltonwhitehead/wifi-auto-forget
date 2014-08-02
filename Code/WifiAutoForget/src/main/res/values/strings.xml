@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App -->
+    <string name="app_name">Wi-Fi AutoForget</string>
+
+    <!-- AutoForget -->
+    <string name="add_single_autoforget">Single</string>
+    <string name="add_permanent_autoforget">Permanent</string>
+    <string name="autoforgetbehavior_single">Single AutoForget</string>
+    <string name="autoforgetbehavior_permanent">Permanent AutoForget</string>
+    <string name="autoforgetbehavior_never">Never AutoForget</string>
+    <string name="autoforgetbehavior_unknown">Unknown</string>
+
+    <!-- Unknown Wi-Fi Notification -->
+    <string name="notification_unknown_wifi_title">Joined unknown Wi-Fi</string>
+    <string name="notification_unknown_wifi_subtext">Swipe away to Never AutoForget this Wi-Fi</string>
+
+    <!-- Add Wi-Fi Service -->
+    <string name="add_network_success">Added %1$s as %2$s</string>
+    <string name="add_network_failure">Failed to add %1$s as %2$s. Sorry!</string>
+
+    <!-- AutoForget Wi-Fi Networks -->
+    <string name="autoforget_wifis_title">Wi-Fi AutoForget</string>
+    <string name="autoforget_wifis_message_list_empty_subject">No AutoForget Wi-Fis yet!</string>
+    <string name="autoforget_wifis_message_list_empty_body">Go join some Wi-Fis and add them via the Unknown Wi-Fi notification. There\'ll be a list of them here when you return!</string>
+
+</resources>

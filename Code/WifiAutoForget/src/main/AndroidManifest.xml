@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.cebesius.wifiautoforget" >
+
+    <application
+        android:name=".WifiAutoForgetApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".activity.AutoForgetWifisActivity"
+            android:label="@string/autoforget_wifis_title">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <receiver
+            android:name=".receiver.ConnectivityChangeReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".service.ConnectivityChangeService"
+            android:exported="false" >
+        </service>
+        <service
+            android:name=".service.AddWifiService"
+            android:exported="false" >
+        </service>
+
+        <meta-data
+            android:name="AA_DB_NAME"
+            android:value="WifiAutoForget.db" />
+        <meta-data
+            android:name="AA_DB_VERSION"
+            android:value="1" />
+
+    </application>
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+</manifest>
