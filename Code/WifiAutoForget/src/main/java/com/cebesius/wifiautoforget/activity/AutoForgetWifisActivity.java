@@ -55,12 +55,14 @@ public class AutoForgetWifisActivity extends Activity {
         super.onResume();
         BusPortal.getInstance().register(this);
         BusPortal.getInstance().register(presenter);
+        viewProxy.onResume();
         presenter.init();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        viewProxy.onPause();
         BusPortal.getInstance().unregister(presenter);
         BusPortal.getInstance().unregister(this);
     }

@@ -1,7 +1,5 @@
 package com.cebesius.wifiautoforget.mvp;
 
-import android.widget.Toast;
-
 import com.cebesius.wifiautoforget.domain.AutoForgetWifi;
 import com.cebesius.wifiautoforget.util.BusPortal;
 import com.squareup.otto.Subscribe;
@@ -45,7 +43,14 @@ public class AutoForgetWifisPresenter {
 
     @Subscribe
     public void onRequestEditAutoForgetWifiEvent(RequestEditAutoForgetWifiEvent event) {
-        busPortal.post(new AppPresenter.ShowToastEvent("TODO: show dialog to edit " + event.autoForgetWifi.getSsid(), Toast.LENGTH_SHORT));
+        view.showAutoForgetWifiChangeBehaviorDialog(event.autoForgetWifi);
+    }
+
+    @Subscribe
+    public void onUserChangedAutoForgetBehavior(UserChangedAutoForgetBehaviorEvent event) {
+        AutoForgetWifi autoForgetWifi = model.findAutoForgetWifiBySsid(event.ssid);
+        model.setAutoForgetWifiBehavior(autoForgetWifi, event.behavior);
+        view.onAutoForgetWifiBehaviorChanged(autoForgetWifi);
     }
 
     public static class RequestStartOnboardingEvent { }
@@ -58,6 +63,17 @@ public class AutoForgetWifisPresenter {
 
         public RequestEditAutoForgetWifiEvent(AutoForgetWifi autoForgetWifi) {
             this.autoForgetWifi = autoForgetWifi;
+        }
+    }
+
+    public static class UserChangedAutoForgetBehaviorEvent {
+
+        private final String ssid;
+        private final AutoForgetWifi.Behavior behavior;
+
+        public UserChangedAutoForgetBehaviorEvent(String ssid, AutoForgetWifi.Behavior behavior) {
+            this.ssid = ssid;
+            this.behavior = behavior;
         }
     }
 }

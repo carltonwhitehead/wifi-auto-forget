@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.cebesius.wifiautoforget.R;
@@ -48,5 +47,9 @@ public class AutoForgetWifiItem extends FrameLayout {
             behaviorText = res.getString(R.string.autoforgetbehavior_unknown);
         }
         behaviorView.setText(behaviorText);
+    }
+
+    public void onAutoForgetWifiBehaviorChanged(AutoForgetWifi autoForgetWifi) {
+        setupBehavior(autoForgetWifi);
     }
 }

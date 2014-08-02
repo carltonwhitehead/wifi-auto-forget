@@ -9,6 +9,7 @@ import com.cebesius.wifiautoforget.gateway.AutoForgetWifiStorage;
 import com.cebesius.wifiautoforget.gateway.UserPreferenceStorage;
 import com.cebesius.wifiautoforget.util.BusPortal;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -20,10 +21,11 @@ import static com.cebesius.wifiautoforget.mvp.AutoForgetWifisPresenter.AutoForge
 public class AutoForgetWifisModel {
 
     private final ActivityModelProxy activityModelProxy = new ActivityModelProxy();
-    private List<AutoForgetWifi> autoForgetWifis;
     private final AutoForgetWifiStorage autoForgetWifiStorage;
     private final UserPreferenceStorage userPreferenceStorage;
     private final BusPortal busPortal;
+    private List<AutoForgetWifi> autoForgetWifis;
+    private HashMap<String, AutoForgetWifi> autoForgetWifisBySsid;
 
     public AutoForgetWifisModel(AutoForgetWifiStorage autoForgetWifiStorage, UserPreferenceStorage userPreferenceStorage, BusPortal busPortal) {
         this.autoForgetWifiStorage = autoForgetWifiStorage;
@@ -48,6 +50,10 @@ public class AutoForgetWifisModel {
             @Override
             protected Void doInBackground(Void... voids) {
                 autoForgetWifis = autoForgetWifiStorage.getAllAutoForgetWifis();
+                autoForgetWifisBySsid = new HashMap<>(autoForgetWifis.size());
+                for (AutoForgetWifi autoForgetWifi : autoForgetWifis) {
+                    autoForgetWifisBySsid.put(autoForgetWifi.getSsid(), autoForgetWifi);
+                }
                 busPortal.post(new AutoForgetWifisLoadedEvent());
                 return null;
             }
@@ -59,6 +65,21 @@ public class AutoForgetWifisModel {
             throw new IllegalStateException("Programmer error: must call loadAutoForgetWifis and receive success event before calling getAutoForgetWifis()");
         }
         return autoForgetWifis;
+    }
+
+    AutoForgetWifi findAutoForgetWifiBySsid(String ssid) {
+        return autoForgetWifisBySsid.get(ssid);
+    }
+
+    void setAutoForgetWifiBehavior(final AutoForgetWifi autoForgetWifi, AutoForgetWifi.Behavior behavior) {
+        autoForgetWifi.setBehavior(behavior);
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                autoForgetWifiStorage.save(autoForgetWifi);
+                return null;
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static class ActivityModelProxy {

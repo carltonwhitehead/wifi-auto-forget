@@ -6,10 +6,12 @@ import android.text.TextUtils;
 
 import com.cebesius.wifiautoforget.R;
 
+import java.io.Serializable;
+
 /**
- *
+ * Represents a Wi-Fi network and behavior associated with it
  */
-public class AutoForgetWifi {
+public class AutoForgetWifi implements Serializable {
 
     private String ssid;
     private Behavior behavior;

@@ -3,7 +3,6 @@ package com.cebesius.wifiautoforget.mvp;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -12,8 +11,10 @@ import android.widget.TextView;
 
 import com.cebesius.wifiautoforget.R;
 import com.cebesius.wifiautoforget.adapter.AutoForgetWifisAdapter;
+import com.cebesius.wifiautoforget.dialog.ChangeAutoForgetBehaviorDialog;
 import com.cebesius.wifiautoforget.domain.AutoForgetWifi;
 import com.cebesius.wifiautoforget.util.BusPortal;
+import com.squareup.otto.Subscribe;
 
 import java.util.List;
 
@@ -72,15 +73,34 @@ public class AutoForgetWifisView extends ActivityView {
         );
     }
 
+    void showAutoForgetWifiChangeBehaviorDialog(AutoForgetWifi autoForgetWifi) {
+        ChangeAutoForgetBehaviorDialog dialog = ChangeAutoForgetBehaviorDialog.newInstance(autoForgetWifi);
+        getActivity().getFragmentManager()
+                .beginTransaction()
+                .add(dialog, "change autoforgetwifi.behavior")
+                .commit();
+    }
+
+    void onAutoForgetWifiBehaviorChanged(AutoForgetWifi autoForgetWifi) {
+        autoForgetWifisAdapter.onAutoForgetWifiBehaviorChanged(autoForgetWifi);
+    }
+
+    @Subscribe
+    public void onUserChangedAutoForgetEvent(ChangeAutoForgetBehaviorDialog.AutoForgetBehaviorChangedEvent event) {
+        busPortal.post(new AutoForgetWifisPresenter.UserChangedAutoForgetBehaviorEvent(
+                event.ssid,
+                event.behavior
+        ));
+    }
+
     private void setupAutoForgetWifisList(List<AutoForgetWifi> autoForgetWifis) {
         if (autoForgetWifis != null) {
             if (autoForgetWifisAdapter == null) {
-                autoForgetWifisAdapter = new AutoForgetWifisAdapter();
+                autoForgetWifisAdapter = new AutoForgetWifisAdapter(autoForgetWifis);
                 autoForgetWifisList.setAdapter(autoForgetWifisAdapter);
                 autoForgetWifisList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                        Log.v("onItemClickListener", "position: " + position);
                         AutoForgetWifi autoForgetWifi = (AutoForgetWifi) adapterView.getItemAtPosition(position);
                         busPortal.post(new RequestEditAutoForgetWifiEvent(autoForgetWifi));
                     }
@@ -120,6 +140,14 @@ public class AutoForgetWifisView extends ActivityView {
         public void onCreateView() {
             getActivity().setContentView(R.layout.activity_auto_forget_wifis);
             ButterKnife.inject(AutoForgetWifisView.this, getActivity());
+        }
+
+        public void onResume() {
+            busPortal.register(AutoForgetWifisView.this);
+        }
+
+        public void onPause() {
+            busPortal.unregister(AutoForgetWifisView.this);
         }
     }
 }
