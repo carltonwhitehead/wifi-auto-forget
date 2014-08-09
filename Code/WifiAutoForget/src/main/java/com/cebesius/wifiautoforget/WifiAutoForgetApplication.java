@@ -8,6 +8,12 @@ import com.cebesius.wifiautoforget.mvp.AppPresenter;
 import com.cebesius.wifiautoforget.mvp.AppView;
 import com.cebesius.wifiautoforget.util.BusPortal;
 
+import org.acra.ACRA;
+import org.acra.annotation.ReportsCrashes;
+
+import antoche.HockeySender;
+
+@ReportsCrashes(formKey = Secrets.HOCKEYAPP_APP_ID)
 public class WifiAutoForgetApplication extends Application {
 
     private static WifiAutoForgetApplication instance;
@@ -20,6 +26,7 @@ public class WifiAutoForgetApplication extends Application {
 
     @Override
     public void onCreate() {
+        initializeACRA();
         super.onCreate();
         this.instance = this;
         presenter = new AppPresenter(
@@ -28,6 +35,13 @@ public class WifiAutoForgetApplication extends Application {
         );
         ActiveAndroid.initialize(this);
         BusPortal.getInstance().register(presenter);
+    }
+
+    private void initializeACRA() {
+        if (BuildConfig.FEATURE_CRASH_REPORTS_ENABLED) {
+            ACRA.init(this);
+            ACRA.getErrorReporter().setReportSender(new HockeySender());
+        }
     }
 
     @Override
