@@ -10,6 +10,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,12 +41,12 @@ public class ConnectivityChangePresenterTest {
     }
 
     @Test
-    public void itShouldHandleJoinPermanentAutoForgetWifi() {
+    public void itShouldDoNothingSpecialWhenJoinPermanentAutoForgetWifi() {
         when(model.isConnectedWifi()).thenReturn(true);
         when(model.isConnectedWifiUnknown()).thenReturn(false);
         when(model.isConnectedWifiPermanentAutoForget()).thenReturn(true);
         presenter.present();
-        verify(view).showPermanentAutoForgetNotification(any(AutoForgetWifi.class), any(ConnectivityChangeView.NotificationVerbosity.class));
+        verify(view, never()).showPermanentAutoForgetNotification(any(AutoForgetWifi.class), any(ConnectivityChangeView.NotificationVerbosity.class));
         verify(model).autoForget();
     }
 
@@ -53,6 +54,8 @@ public class ConnectivityChangePresenterTest {
     public void itShouldHandleJoinOther() {
         when(model.isConnectedWifi()).thenReturn(false);
         presenter.present();
+        verify(view, never()).showPermanentAutoForgetNotification(any(AutoForgetWifi.class), any(ConnectivityChangeView.NotificationVerbosity.class));
+        verify(view, never()).showUnknownWifiNotification(any(AutoForgetWifi.class), any(ConnectivityChangeView.NotificationVerbosity.class));
         verify(model).autoForget();
     }
 }

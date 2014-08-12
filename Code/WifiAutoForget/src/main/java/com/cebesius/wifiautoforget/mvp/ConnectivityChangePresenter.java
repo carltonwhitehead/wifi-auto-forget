@@ -29,9 +29,7 @@ public class ConnectivityChangePresenter {
             ConnectivityChangeView.NotificationVerbosity notificationVerbosity = chooseNotificationVerbosity();
             view.showUnknownWifiNotification(autoForgetWifi, notificationVerbosity);
         } else if (model.isConnectedWifiPermanentAutoForget()) {
-            AutoForgetWifi autoForgetWifi = model.buildNetwork();
-            ConnectivityChangeView.NotificationVerbosity notificationVerbosity = chooseNotificationVerbosity();
-            view.showPermanentAutoForgetNotification(autoForgetWifi, notificationVerbosity);
+            // no-op
         }
         model.autoForget();
     }
