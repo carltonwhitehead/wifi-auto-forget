@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static com.cebesius.wifiautoforget.mvp.AutoForgetWifisPresenter.AutoForgetWifisLoadedEvent;
-
 /**
  * Model for the AutoForgetWifis management screen
  */
@@ -80,6 +78,12 @@ public class AutoForgetWifisModel extends FragmentModel {
     @Override
     public FragmentModelProxy getFragmentModelProxy() {
         return fragmentProxy;
+    }
+
+    public static class AutoForgetWifisLoadedEvent {
+        private AutoForgetWifisLoadedEvent() {
+            // no-op
+        }
     }
 
     public static class FragmentProxy implements FragmentModelProxy {

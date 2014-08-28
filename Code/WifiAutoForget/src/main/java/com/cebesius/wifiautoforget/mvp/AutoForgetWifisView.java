@@ -23,8 +23,6 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-import static com.cebesius.wifiautoforget.mvp.AutoForgetWifisPresenter.RequestEditAutoForgetWifiEvent;
-
 /**
  * View for the AutoForgetWifis management screen
  */
@@ -87,7 +85,7 @@ public class AutoForgetWifisView extends FragmentView {
 
     @Subscribe
     public void onUserChangedAutoForgetEvent(ChangeAutoForgetBehaviorDialog.AutoForgetBehaviorChangedEvent event) {
-        getBusPortal().post(new AutoForgetWifisPresenter.UserChangedAutoForgetBehaviorEvent(
+        getBusPortal().post(new UserChangedAutoForgetBehaviorEvent(
                 event.ssid,
                 event.behavior
         ));
@@ -120,6 +118,26 @@ public class AutoForgetWifisView extends FragmentView {
             messageWrapperView.setVisibility(View.VISIBLE);
         } else {
             messageWrapperView.setVisibility(View.GONE);
+        }
+    }
+
+    public static class RequestEditAutoForgetWifiEvent {
+
+        public final AutoForgetWifi autoForgetWifi;
+
+        private RequestEditAutoForgetWifiEvent(AutoForgetWifi autoForgetWifi) {
+            this.autoForgetWifi = autoForgetWifi;
+        }
+    }
+
+    public static class UserChangedAutoForgetBehaviorEvent {
+
+        public final String ssid;
+        public final AutoForgetWifi.Behavior behavior;
+
+        private UserChangedAutoForgetBehaviorEvent(String ssid, AutoForgetWifi.Behavior behavior) {
+            this.ssid = ssid;
+            this.behavior = behavior;
         }
     }
 

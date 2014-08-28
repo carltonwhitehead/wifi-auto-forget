@@ -31,7 +31,7 @@ public class AutoForgetWifisPresenter extends BasePresenter {
     }
 
     @Subscribe
-    public void onAutoForgetWifisLoaded(AutoForgetWifisLoadedEvent event) {
+    public void onAutoForgetWifisLoaded(AutoForgetWifisModel.AutoForgetWifisLoadedEvent event) {
         view.hideLoading();
         List<AutoForgetWifi> autoForgetWifis = model.getAutoForgetWifis();
         if (autoForgetWifis.size() > 0) {
@@ -42,38 +42,16 @@ public class AutoForgetWifisPresenter extends BasePresenter {
     }
 
     @Subscribe
-    public void onRequestEditAutoForgetWifiEvent(RequestEditAutoForgetWifiEvent event) {
+    public void onRequestEditAutoForgetWifiEvent(AutoForgetWifisView.RequestEditAutoForgetWifiEvent event) {
         view.showAutoForgetWifiChangeBehaviorDialog(event.autoForgetWifi);
     }
 
     @Subscribe
-    public void onUserChangedAutoForgetBehavior(UserChangedAutoForgetBehaviorEvent event) {
+    public void onUserChangedAutoForgetBehavior(AutoForgetWifisView.UserChangedAutoForgetBehaviorEvent event) {
         AutoForgetWifi autoForgetWifi = model.findAutoForgetWifiBySsid(event.ssid);
         model.setAutoForgetWifiBehavior(autoForgetWifi, event.behavior);
         view.onAutoForgetWifiBehaviorChanged(autoForgetWifi);
     }
 
     public static class RequestStartOnboardingEvent { }
-
-    public static class AutoForgetWifisLoadedEvent { }
-
-    public static class RequestEditAutoForgetWifiEvent {
-
-        private final AutoForgetWifi autoForgetWifi;
-
-        public RequestEditAutoForgetWifiEvent(AutoForgetWifi autoForgetWifi) {
-            this.autoForgetWifi = autoForgetWifi;
-        }
-    }
-
-    public static class UserChangedAutoForgetBehaviorEvent {
-
-        private final String ssid;
-        private final AutoForgetWifi.Behavior behavior;
-
-        public UserChangedAutoForgetBehaviorEvent(String ssid, AutoForgetWifi.Behavior behavior) {
-            this.ssid = ssid;
-            this.behavior = behavior;
-        }
-    }
 }
