@@ -58,6 +58,7 @@ public abstract class BaseFragment<M extends FragmentModel, V extends FragmentVi
     @Override
     public void onResume() {
         super.onResume();
+        BusPortal.getInstance().register(this);
         BusPortal.getInstance().register(presenter);
         modelProxy.onResume();
         viewProxy.onResume();
@@ -70,6 +71,7 @@ public abstract class BaseFragment<M extends FragmentModel, V extends FragmentVi
         viewProxy.onPause();
         modelProxy.onPause();
         BusPortal.getInstance().unregister(presenter);
+        BusPortal.getInstance().unregister(this);
     }
 
     @Override
