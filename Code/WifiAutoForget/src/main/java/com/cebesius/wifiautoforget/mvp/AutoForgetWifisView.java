@@ -1,9 +1,11 @@
 package com.cebesius.wifiautoforget.mvp;
 
-import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -26,7 +28,7 @@ import static com.cebesius.wifiautoforget.mvp.AutoForgetWifisPresenter.RequestEd
 /**
  * View for the AutoForgetWifis management screen
  */
-public class AutoForgetWifisView extends ActivityView {
+public class AutoForgetWifisView extends FragmentView {
 
     @InjectView(R.id.list)
     ListView autoForgetWifisList;
@@ -37,27 +39,25 @@ public class AutoForgetWifisView extends ActivityView {
     @InjectView(R.id.message_body)
     TextView messageBodyView;
 
-    private final ActivityViewProxy activityViewProxy = new ActivityViewProxy();
-    private final BusPortal busPortal;
+    private final FragmentProxy fragmentProxy = new FragmentProxy();
 
     private AutoForgetWifisAdapter autoForgetWifisAdapter;
 
-    public AutoForgetWifisView(Activity activity, BusPortal busPortal) {
-        super(activity);
-        this.busPortal = busPortal;
+    public AutoForgetWifisView(Fragment fragment, BusPortal busPortal) {
+        super(fragment, busPortal);
     }
 
-    public ActivityViewProxy getActivityViewProxy() {
-        return activityViewProxy;
+    public FragmentProxy getFragmentViewProxy() {
+        return fragmentProxy;
     }
 
     void showLoading() {
-        getActivity().setProgressBarIndeterminate(true);
-        getActivity().setProgressBarIndeterminateVisibility(true);
+        getFragmentActivity().setProgressBarIndeterminate(true);
+        getFragmentActivity().setProgressBarIndeterminateVisibility(true);
     }
 
     void hideLoading() {
-        getActivity().setProgressBarIndeterminateVisibility(false);
+        getFragmentActivity().setProgressBarIndeterminateVisibility(false);
     }
 
     void showAutoForgetWifis(List<AutoForgetWifi> autoForgetWifis) {
@@ -68,16 +68,16 @@ public class AutoForgetWifisView extends ActivityView {
     void showAutoForgetWifisListEmptyMessage() {
         setupAutoForgetWifisList(null);
         setupMessage(
-                getActivity().getString(R.string.autoforget_wifis_message_list_empty_subject),
-                getActivity().getString(R.string.autoforget_wifis_message_list_empty_body)
+                getResources().getString(R.string.autoforget_wifis_message_list_empty_subject),
+                getResources().getString(R.string.autoforget_wifis_message_list_empty_body)
         );
     }
 
     void showAutoForgetWifiChangeBehaviorDialog(AutoForgetWifi autoForgetWifi) {
         ChangeAutoForgetBehaviorDialog dialog = ChangeAutoForgetBehaviorDialog.newInstance(autoForgetWifi);
-        getActivity().getFragmentManager()
+        getFragmentActivity().getFragmentManager()
                 .beginTransaction()
-                .add(dialog, "change autoforgetwifi.behavior")
+                .add(dialog, ChangeAutoForgetBehaviorDialog.TAG)
                 .commit();
     }
 
@@ -87,7 +87,7 @@ public class AutoForgetWifisView extends ActivityView {
 
     @Subscribe
     public void onUserChangedAutoForgetEvent(ChangeAutoForgetBehaviorDialog.AutoForgetBehaviorChangedEvent event) {
-        busPortal.post(new AutoForgetWifisPresenter.UserChangedAutoForgetBehaviorEvent(
+        getBusPortal().post(new AutoForgetWifisPresenter.UserChangedAutoForgetBehaviorEvent(
                 event.ssid,
                 event.behavior
         ));
@@ -102,7 +102,7 @@ public class AutoForgetWifisView extends ActivityView {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                         AutoForgetWifi autoForgetWifi = (AutoForgetWifi) adapterView.getItemAtPosition(position);
-                        busPortal.post(new RequestEditAutoForgetWifiEvent(autoForgetWifi));
+                        getBusPortal().post(new RequestEditAutoForgetWifiEvent(autoForgetWifi));
                     }
                 });
             }
@@ -123,31 +123,42 @@ public class AutoForgetWifisView extends ActivityView {
         }
     }
 
-    public class ActivityViewProxy {
+    public class FragmentProxy implements FragmentViewProxy {
 
-        private ActivityViewProxy() {
+        private FragmentProxy() {
             // no-op
         }
 
-        public void saveState(Bundle outState) {
-            // TODO: save state
-        }
-
-        public void restoreState(Bundle savedInstanceState) {
-            // TODO: restore state
-        }
-
-        public void onCreateView() {
-            getActivity().setContentView(R.layout.activity_auto_forget_wifis);
-            ButterKnife.inject(AutoForgetWifisView.this, getActivity());
-        }
-
+        @Override
         public void onResume() {
-            busPortal.register(AutoForgetWifisView.this);
+            getBusPortal().register(AutoForgetWifisView.this);
         }
 
+        @Override
         public void onPause() {
-            busPortal.unregister(AutoForgetWifisView.this);
+            getBusPortal().unregister(AutoForgetWifisView.this);
+        }
+
+        @Override
+        public void onSaveInstanceState(Bundle outState) {
+            // no-op
+        }
+
+        @Override
+        public void onRestoreInstanceState(Bundle savedInstanceState) {
+            // no-op
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container) {
+            View view = inflater.inflate(R.layout.view_auto_forget_wifis, container, false);
+            ButterKnife.inject(AutoForgetWifisView.this, view);
+            return view;
+        }
+
+        @Override
+        public void onDestroyView() {
+            ButterKnife.reset(AutoForgetWifisView.this);
         }
     }
 }

@@ -23,7 +23,7 @@ public class ChangeAutoForgetBehaviorDialog extends DialogFragment {
 
     private static final String KEY_AUTO_FORGET_WIFI_SSID = ChangeAutoForgetBehaviorDialog.class.getSimpleName() + ".autoForgetWifi.ssid";
     private static final String KEY_AUTO_FORGET_WIFI_BEHAVIOR = ChangeAutoForgetBehaviorDialog.class.getSimpleName() + ".autoForgetWifi.behavior";
-    private static final String TAG = ChangeAutoForgetBehaviorDialog.class.getSimpleName();
+    public static final String TAG = ChangeAutoForgetBehaviorDialog.class.getSimpleName();
 
     public static ChangeAutoForgetBehaviorDialog newInstance(AutoForgetWifi autoForgetWifi) {
         if (autoForgetWifi == null) {

@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Presenter for the AutoForgetWifis management screen
  */
-public class AutoForgetWifisPresenter {
+public class AutoForgetWifisPresenter extends BasePresenter {
 
     private final AutoForgetWifisModel model;
     private final AutoForgetWifisView view;

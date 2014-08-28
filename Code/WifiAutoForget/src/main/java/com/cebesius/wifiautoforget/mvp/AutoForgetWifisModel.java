@@ -18,19 +18,18 @@ import static com.cebesius.wifiautoforget.mvp.AutoForgetWifisPresenter.AutoForge
 /**
  * Model for the AutoForgetWifis management screen
  */
-public class AutoForgetWifisModel {
+public class AutoForgetWifisModel extends FragmentModel {
 
-    private final ActivityModelProxy activityModelProxy = new ActivityModelProxy();
+    private final FragmentProxy fragmentProxy = new FragmentProxy();
     private final AutoForgetWifiStorage autoForgetWifiStorage;
     private final UserPreferenceStorage userPreferenceStorage;
-    private final BusPortal busPortal;
     private List<AutoForgetWifi> autoForgetWifis;
     private HashMap<String, AutoForgetWifi> autoForgetWifisBySsid;
 
-    public AutoForgetWifisModel(AutoForgetWifiStorage autoForgetWifiStorage, UserPreferenceStorage userPreferenceStorage, BusPortal busPortal) {
+    public AutoForgetWifisModel(BusPortal busPortal, AutoForgetWifiStorage autoForgetWifiStorage, UserPreferenceStorage userPreferenceStorage) {
+        super(busPortal);
         this.autoForgetWifiStorage = autoForgetWifiStorage;
         this.userPreferenceStorage = userPreferenceStorage;
-        this.busPortal = busPortal;
     }
 
     boolean isOnboardingEnabled() {
@@ -39,10 +38,6 @@ public class AutoForgetWifisModel {
 
     boolean hasUserCompletedOnboarding() {
         return userPreferenceStorage.hasUserCompletedOnboarding();
-    }
-
-    public ActivityModelProxy getActivityModelProxy() {
-        return activityModelProxy;
     }
 
     void loadAutoForgetWifis() {
@@ -54,7 +49,7 @@ public class AutoForgetWifisModel {
                 for (AutoForgetWifi autoForgetWifi : autoForgetWifis) {
                     autoForgetWifisBySsid.put(autoForgetWifi.getSsid(), autoForgetWifi);
                 }
-                busPortal.post(new AutoForgetWifisLoadedEvent());
+                getBusPortal().post(new AutoForgetWifisLoadedEvent());
                 return null;
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -82,18 +77,34 @@ public class AutoForgetWifisModel {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public static class ActivityModelProxy {
+    @Override
+    public FragmentModelProxy getFragmentModelProxy() {
+        return fragmentProxy;
+    }
 
-        private ActivityModelProxy() {
+    public static class FragmentProxy implements FragmentModelProxy {
+
+        private FragmentProxy() {
             // no-op
         }
 
-        public void saveState(Bundle outState) {
-            // TODO: save state
+        @Override
+        public void onSaveInstanceState(Bundle outState) {
+            // no-op
         }
 
-        public void restoreState(Bundle savedInstanceState) {
-            // TODO: restore state
+        @Override
+        public void onRestoreInstanceState(Bundle savedInstanceState) {
+            // no-op
+        }
+
+        @Override
+        public void onResume() {
+        }
+
+        @Override
+        public void onPause() {
+
         }
     }
 }

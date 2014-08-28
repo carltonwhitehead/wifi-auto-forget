@@ -1,11 +1,14 @@
 package com.cebesius.wifiautoforget.activity;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Window;
 
+import com.cebesius.wifiautoforget.R;
+import com.cebesius.wifiautoforget.fragment.AutoForgetWifisFragment;
 import com.cebesius.wifiautoforget.gateway.AutoForgetWifiStorage;
 import com.cebesius.wifiautoforget.gateway.UserPreferenceStorage;
 import com.cebesius.wifiautoforget.mvp.AutoForgetWifisModel;
@@ -17,65 +20,19 @@ import com.squareup.otto.Subscribe;
 import static com.cebesius.wifiautoforget.mvp.AutoForgetWifisPresenter.*;
 
 /**
- * Activity that hosts the AutoForgetWifis management screen
+ * Activity that hosts the AutoForgetWifis Fragment
  */
 public class AutoForgetWifisActivity extends Activity {
 
-    private AutoForgetWifisPresenter presenter;
-    private AutoForgetWifisModel.ActivityModelProxy modelProxy;
-    private AutoForgetWifisView.ActivityViewProxy viewProxy;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
-
-        // dependencies
-        AutoForgetWifiStorage autoForgetWifiStorage = new AutoForgetWifiStorage();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        BusPortal busPortal = BusPortal.getInstance();
-        AutoForgetWifisModel model = new AutoForgetWifisModel(autoForgetWifiStorage, new UserPreferenceStorage(sharedPreferences), busPortal);
-        AutoForgetWifisView view = new AutoForgetWifisView(this, busPortal);
-
-        // MVP
-        modelProxy = model.getActivityModelProxy();
-        viewProxy = view.getActivityViewProxy();
-        presenter = new AutoForgetWifisPresenter(model, view, busPortal);
-
-        if (savedInstanceState != null) {
-            modelProxy.restoreState(savedInstanceState);
-            viewProxy.restoreState(savedInstanceState);
+        setContentView(R.layout.activity_simple_fragment_host);
+        FragmentManager fm = getFragmentManager();
+        if (fm.findFragmentByTag(AutoForgetWifisFragment.TAG) == null) {
+            fm.beginTransaction()
+                    .add(R.id.root, new AutoForgetWifisFragment(), AutoForgetWifisFragment.TAG)
+                    .commit();
         }
-
-        viewProxy.onCreateView();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        BusPortal.getInstance().register(this);
-        BusPortal.getInstance().register(presenter);
-        viewProxy.onResume();
-        presenter.init();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        viewProxy.onPause();
-        BusPortal.getInstance().unregister(presenter);
-        BusPortal.getInstance().unregister(this);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        modelProxy.saveState(outState);
-        viewProxy.saveState(outState);
-    }
-
-    @Subscribe
-    public void onRequestStartOnboarding(RequestStartOnboardingEvent event) {
-        // TODO: start OnboardingActivity
     }
 }
